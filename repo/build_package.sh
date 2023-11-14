@@ -1,10 +1,11 @@
 #!/bin/bash
 
+#set -x
 # usage: sh build_package.sh python or sh build_package.sh python=2.7.18
 
 repo="piston"
 # GitHub Token
-token="xxxxxxx"
+token="xxxxx"
 # owner
 owner="yanjun-ios"
 # Release名
@@ -14,6 +15,7 @@ attach_dir="/piston/repo/"
 # ReleaseId
 release_id=""
 
+all_assets=()
 upload_assets(){
   release_id=$1
   file=$2
@@ -32,7 +34,65 @@ upload_assets(){
     https://api.github.com/repos/$owner/$repo/releases/$release_id/assets > /dev/null
 }
 
+# 获取所有的asset
+get_all_assets() {
+ page=1
+ #release_id=128663575
+ assets_url="https://api.github.com/repos/$owner/$repo/releases/${release_id}/assets?per_page=100"
+ while :
+ do
+   local assets
+   assets=$(curl -fsS -H "Authorization: token ${token}" "${assets_url}&page=${page}" | jq -r '.[] | "\(.name)-\(.id)"')
+   name=$(echo ${assets[0]}| grep "pkg.tar.gz")
+   if [ $? -ne 0 ];then
+    break;
+   fi
+   # 将当前页面的assets添加到数组中
+   #mapfile -t assets < <(echo "$assets")
+   for i in ${assets[*]}
+   do
+     # echo "this is i: "$i
+     all_assets[${#all_assets[*]}]=${i}
+   done
+   ((page++))
+ done
+ echo "全量数组长度:${#all_assets[@]}"
+}
+
+# 根据文件名删除附件
+delete_release_asset(){
+  release_id=$1
+  file_name=$2
+  if [ ${#all_assets[@]} -eq 0 ]; then
+   echo "assets 为空,请求全量assets"
+   get_all_assets
+  fi
+  asset_id=""
+  for element in "${all_assets[@]}"; do
+    if [[ $element == *"$file_name"* ]]; then
+      asset_id=$(echo $element | awk -F '-' '{print $NF}')
+      break
+    fi
+  done
+  echo "file_name 为：$file_name asset_id 为：$asset_id"
+  if [ "$asset_id" == "" ]; then
+    echo "Delete failed, No asset found with filename: $filename"
+    return 1
+  fi
+
+  asset_url="https://api.github.com/repos/$owner/${repo}/releases/assets/${asset_id}"
+
+  response=$(curl -s -X DELETE -H "Authorization: token ${token}" ${asset_url})
+
+  if echo "$response" | grep -q '204 No Content'; then
+    echo "Failed to delete asset: $response"
+  else
+    echo "Asset deleted successfully"
+  fi
+}
+
 release_to_github(){
+  cd $attach_dir
   # 获取 release_id
   if [ "x"${release_id} == "x" ]; then
       # 判断release是否存在
@@ -50,21 +110,23 @@ release_to_github(){
   fi
 
   # 遍历 tar.gz 附件目录上传文件
-  for file in $attach_dir/*.tar.gz; do
+  for file in *.tar.gz; do
     echo "release: $file"
+    delete_release_asset $release_id $file
     upload_assets $release_id $file
   done
 
   # 合并index文件
   mv index index_1 && curl -s -L https://github.com/yanjun-ios/piston/releases/download/Packages/index -o index_2
-  for file in $attach_dir/*.tar.gz; do
-    sed -i '/${file}$/d' index_2
+  for file in *.tar.gz; do
+    sed -i "/${file}$/d" index_2
   done
   cat index_1 index_2 | sort | uniq > index
 
   echo "upload the index file !"
-  # 上传 index 文件
-  upload_assets $release_id $attach_dir/index
+   上传 index 文件
+  delete_release_asset $release_id index
+  upload_assets $release_id index
 
 }
 
@@ -82,7 +144,8 @@ build_package(){
     else
       if [ -d "$pkg" ];then
         echo "install all version for $pkg"
-        for version in "$pkg";do
+        for version in $pkg/*;do
+          version=$(echo $version | awk -F '/' '{print $2}')
           pkgname=${pkg}"-"${version}
           echo $pkgname
           make -j16 $pkgname.pkg.tar.gz PLATFORM=docker-debian
@@ -101,3 +164,4 @@ build_package(){
 build_package $@
 
 release_to_github
+
