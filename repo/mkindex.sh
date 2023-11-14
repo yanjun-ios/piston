@@ -1,4 +1,6 @@
-BASEURL=http://repo:8000/
+# BASEURL=http://repo:8000/
+
+BASEURL=https://github.com/yanjun-ios/piston/releases/download/Packages/
 
 i=0
 
@@ -6,7 +8,7 @@ echo "" > index
 
 for pkg in $(find ../packages -type f -name "*.pkg.tar.gz")
 do
-    
+
     cp $pkg .
 
     PKGFILE=$(basename $pkg)
@@ -18,6 +20,6 @@ do
 
     echo "$PKGNAME,$PKGVERSION,$PKGCHECKSUM,$BASEURL$PKGFILE" >> index
     echo "Adding package $PKGNAME-$PKGVERSION"
-    
+
     ((i=i+1))
 done

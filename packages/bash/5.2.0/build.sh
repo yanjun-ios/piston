@@ -18,3 +18,15 @@ make -j$(nproc)
 make install -j$(nproc)
 cd ../
 rm -rf build
+
+# install aws cli
+PREFIX=$PWD
+
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip" -o "awscliv2.zip"
+
+unzip awscliv2.zip
+
+./aws/install -i $PREFIX/aws-cli -b $PREFIX/bin
+
+rm -fr awscliv2.zip
+rm -fr ./aws

@@ -2,3 +2,5 @@
 
 # Put 'export' statements here for environment variables
 export PATH=$PWD/bin:$PATH
+
+export PATH=$PWD/aws-cli:$PATH

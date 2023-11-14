@@ -16,6 +16,6 @@ make install -j$(nproc)
 
 cd ..
 
-rm -rf build 
+rm -rf build
 
-bin/pip3 install numpy scipy pandas pycrypto whoosh bcrypt passlib
+bin/pip3 install numpy scipy pandas pycrypto whoosh bcrypt passlib boto3
