@@ -93,6 +93,10 @@ delete_release_asset(){
 
 release_to_github(){
   cd $attach_dir
+  if [ ! -f *.tar.gz ];then
+    echo "there is no packages to be released , exit 1"
+    exit 1
+  fi
   # 获取 release_id
   if [ "x"${release_id} == "x" ]; then
       # 判断release是否存在
@@ -140,6 +144,10 @@ build_package(){
   for pkg in "$@"
   do
     shift
+    if [ ! -d $pkg ];then
+      echo "Packages not found for $pkg"
+      continue
+    fi
     if [  $pkg == *"="* ];then
       echo "install $pkg"
       pkgname=$(echo ${pkg/=/-})
@@ -158,6 +166,10 @@ build_package(){
     fi
   done
 
+  if [ ! -f *.tar.gz ];then
+    echo "there is no packages to be released , exit 1"
+    exit 1
+  fi
   cd /piston/repo
   echo "Creating index"
   ./mkindex.sh
@@ -165,7 +177,14 @@ build_package(){
 
 }
 
-build_package $@
+if [ $1 == "release" ];
+  release_to_github
+else
+  build_package $@
+#  release_to_github
+fi
 
-release_to_github
+
+
+
 

@@ -6,4 +6,4 @@ rm go1.16.2.linux-amd64.tar.gz
 # install aws go SDK
 source environment
 go mod init example.com/m/v2
-go get -u github.com/aws/aws-sdk-go/...
+go get -u github.com/aws/aws-sdk-go

@@ -4,7 +4,7 @@ BUILD_PLATFORM=$(or ${PLATFORM},baremetal-$(shell grep -oP "^ID=\K.+" /etc/os-re
 help:
 	@echo "You probably don't want to build all package"
 	@echo "If you do run $`make build-all$`"
-	@echo 
+	@echo
 	@echo "Run $`make [language]-[version].pkg.tar.gz$` to build a specific language"
 
 build build-all: $(addsuffix .pkg.tar.gz, ${PACKAGES})
