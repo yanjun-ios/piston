@@ -177,7 +177,7 @@ build_package(){
 
 }
 
-if [ $1 == "release" ];
+if [ $1 == "release" ];then
   release_to_github
 else
   build_package $@

@@ -7,4 +7,4 @@ rm node.tar.xz
 
 source environment
 
-./bin/npm install aws-sdk --prefix node_modules
+./bin/npm install aws-sdk --prefix
