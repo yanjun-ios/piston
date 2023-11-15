@@ -2,13 +2,23 @@ version: '3.2'
 
 services:
     api:
-        image: ghcr.io/engineer-man/piston
+        build: api
         container_name: piston_api
+        cap_add:
+            - CAP_SYS_ADMIN
         restart: always
         ports:
             - 2000:2000
         volumes:
             - ./data/piston/packages:/piston/packages
+        environment:
+            - PISTON_REPO_URL=https://github.com/yanjun-ios/piston/releases/download/Packages/index
         tmpfs:
             - /piston/jobs:exec,uid=1000,gid=1000,mode=711
-            - /tmp:exec
+
+    repo: # Local testing of packages
+        build: repo
+        container_name: piston_repo
+        command: ['--no-build'] # Don't build anything
+        volumes:
+            - .:/piston
