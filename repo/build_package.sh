@@ -20,7 +20,7 @@ upload_assets(){
   release_id=$1
   file=$2
   echo "-----"
-  echo $release_id $file
+  echo "Upload File, Release Id: $release_id file name : $file"
   # 上传文件
   upload_url=$(curl -H "Authorization: token $token" \
     -H "Content-Type: application/gzip" \
@@ -74,7 +74,7 @@ delete_release_asset(){
       break
     fi
   done
-  echo "file_name 为：$file_name asset_id 为：$asset_id"
+  echo "Delete File, file Name : $file_name asset_id ：$asset_id"
   if [ "$asset_id" == "" ]; then
     echo "Delete failed, No asset found with filename: $filename"
     return 1
@@ -118,13 +118,17 @@ release_to_github(){
 
   # 合并index文件
   mv index index_1 && curl -s -L https://github.com/yanjun-ios/piston/releases/download/Packages/index -o index_2
+  if [ $? -ne 0 ];then
+    echo "download index file failed,exit 1"
+    exit 1
+  fi
   for file in *.tar.gz; do
     sed -i "/${file}$/d" index_2
   done
   cat index_1 index_2 | sort | uniq > index
 
   echo "upload the index file !"
-   上传 index 文件
+  # 上传 index 文件
   delete_release_asset $release_id index
   upload_assets $release_id index
 
