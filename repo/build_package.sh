@@ -148,7 +148,7 @@ build_package(){
       echo "Packages not found for $pkg"
       continue
     fi
-    if [  $pkg == *"="* ];then
+    if [ -n "${pkg##*=}" ];then
       echo "install $pkg"
       pkgname=$(echo ${pkg/=/-})
       echo $pkgname
