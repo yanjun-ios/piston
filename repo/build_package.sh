@@ -44,7 +44,8 @@ get_all_assets() {
    local assets
    assets=$(curl -fsS -H "Authorization: token ${token}" "${assets_url}&page=${page}" | jq -r '.[] | "\(.name)-\(.id)"')
    name=$(echo ${assets[0]}| grep "pkg.tar.gz")
-   if [ $? -ne 0 ];then
+   result=$(echo $pkg | grep "=")
+   if [ $? -eq 0 ];then
     break;
    fi
    # 将当前页面的assets添加到数组中
