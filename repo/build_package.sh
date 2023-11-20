@@ -145,11 +145,12 @@ build_package(){
   for pkg in "$@"
   do
     shift
-    if [ ! -d $pkg ];then
+    if [ ! -d `echo $pkg | awk -F'=' '{print $1}'` ];then
       echo "Packages not found for $pkg"
       continue
     fi
-    if [ -n "${pkg##*=}" ];then
+    result=$(echo $pkg | grep "=")
+    if [ $? -eq 0 ];then
       echo "install $pkg"
       pkgname=$(echo ${pkg/=/-})
       echo $pkgname
