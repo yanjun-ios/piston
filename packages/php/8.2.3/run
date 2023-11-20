@@ -1,3 +1,6 @@
 #!/bin/bash
 
-php "$@"
+ln -s  /piston/packages/php/8.2.3/aws-autoloader.php aws-autoloader.php
+ln -s /piston/packages/php/8.2.3/AWS AWS
+
+php -r "aws-autoloader.php" "$@"
