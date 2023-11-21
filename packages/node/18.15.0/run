@@ -3,8 +3,8 @@ export PATH=/piston/packages/node/18.15.0/bin/:/piston/packages/node/18.15.0/nod
 ln -s /piston/packages/node/18.15.0/node_modules node_modules
 
 file_name=$1
-result=$(cat test.js | grep -E "^import")
-if[ $? -eq 0 ];then
+result=$(cat $file_name | grep -E "^import")
+if [ $? -eq 0 ];then
   mv $1 $1.mjs
   file_name=$1.mjs
 fi
