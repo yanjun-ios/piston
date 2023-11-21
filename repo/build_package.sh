@@ -43,9 +43,9 @@ get_all_assets() {
  do
    local assets
    assets=$(curl -fsS -H "Authorization: token ${token}" "${assets_url}&page=${page}" | jq -r '.[] | "\(.name)-\(.id)"')
-   name=$(echo ${assets[0]}| grep "pkg.tar.gz")
-   result=$(echo $pkg | grep "=")
-   if [ $? -eq 0 ];then
+   name=$(echo ${assets[@]}| grep "pkg.tar.gz")
+#   result=$(echo $name | grep "=")
+   if [ $? -ne 0 ];then
     break;
    fi
    # 将当前页面的assets添加到数组中
@@ -92,6 +92,7 @@ delete_release_asset(){
   fi
 }
 
+# 发布到github release中
 release_to_github(){
   cd $attach_dir
   if [ ! -f *.tar.gz ];then
@@ -139,6 +140,7 @@ release_to_github(){
 
 }
 
+# 构建安装包
 build_package(){
   cd /piston/packages
   echo "build packages from args..."
