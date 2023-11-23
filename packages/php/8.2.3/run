@@ -3,6 +3,7 @@
 ln -s  /piston/packages/php/8.2.3/aws-autoloader.php aws-autoloader.php
 ln -s /piston/packages/php/8.2.3/AWS AWS
 if [ -f $1 ];then
+  sed -i '/^<?php/d' $1
   sed -i '1i <?php\nrequire "aws-autoloader.php";' $1
 fi
 php "$@"
