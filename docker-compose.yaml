@@ -13,6 +13,7 @@ services:
             - ./data/piston/packages:/piston/packages
         environment:
             - PISTON_REPO_URL=https://github.com/yanjun-ios/piston/releases/download/Packages/index
+            - PISTON_DISABLE_NETWORKING=false
         tmpfs:
             - /piston/jobs:exec,uid=1000,gid=1000,mode=711
 
