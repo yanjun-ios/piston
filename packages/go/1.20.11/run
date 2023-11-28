@@ -9,4 +9,4 @@ ln -s  /piston/packages/go/1.20.11/go.mod go.mod
 ln -s  /piston/packages/go/1.20.11/gopath/ gopath
 ln -s  /piston/packages/go/1.20.11/go.sum go.sum
 
-GOCACHE=$PWD go run $filename "$@"
+GOCACHE=/piston/packages/go/1.20.11/ go run $filename "$@"
